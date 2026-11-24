@@ -29,11 +29,11 @@ test("falls back to UTC for an unknown time zone", () => {
 	assert.match(formatBookingWhen(startsAt, endsAt, "Not/AZone"), /13:00–13:30 \(UTC\)$/);
 });
 
-test("picks the booking page language, then the browser's, then English", () => {
+test("picks the booking page language, then the browser's, then the installation default", () => {
 	assert.equal(pickGuestLocale("de", "en-US,en;q=0.9"), "de");
 	assert.equal(pickGuestLocale(null, "fr-FR,de;q=0.8"), "fr-FR");
-	assert.equal(pickGuestLocale("not a tag!", "*"), "en-GB");
-	assert.equal(pickGuestLocale(undefined, undefined), "en-GB");
+	assert.equal(pickGuestLocale("not a tag!", "*"), "pt-BR");
+	assert.equal(pickGuestLocale(undefined, undefined), "pt-BR");
 });
 
 test("without a template the default English text is sent, dropping an empty location", () => {
@@ -86,4 +86,12 @@ test("the calendar file is a plain event to add, not a meeting request", () => {
 	assert.match(ics, /\r\nMETHOD:PUBLISH\r\n/);
 	assert.match(ics, /\r\nDTSTART:20261117T130000Z\r\nDTEND:20261117T133000Z\r\n/);
 	assert.doesNotMatch(ics, /ORGANIZER|ATTENDEE|RSVP/);
+});
+
+test("Portuguese confirmations localize defaults and retain custom templates", () => {
+	const mail = buildBookingConfirmation(content, "pt-BR");
+	assert.equal(mail.subject, "Confirmado: Intro call com Paul");
+	assert.match(mail.text, /^Olá, Ana,/);
+	assert.doesNotMatch(mail.text, /Local:|About pricing/);
+	assert.equal(buildBookingConfirmation(content, "pt-BR", { subject: "Meu evento", body: "Olá {guestName}" }).subject, "Meu evento");
 });

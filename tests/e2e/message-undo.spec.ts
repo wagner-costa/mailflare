@@ -1,5 +1,10 @@
 import { expect, test, type APIRequestContext, type Page, type Route } from "@playwright/test";
 
+// These scenarios exercise English explicitly; the installation defaults to pt-BR.
+test.beforeEach(async ({ context, baseURL }) => {
+	await context.addCookies([{ name: "mailflare-locale", value: "en", url: baseURL ?? "http://localhost:3000" }]);
+});
+
 const EMAIL = "admin@example.com";
 const PASSWORD = "demo-password-change-me";
 

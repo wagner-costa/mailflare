@@ -1,3 +1,4 @@
+import { brand } from "@/lib/branding/config";
 import en from "./en.json";
 import { DEFAULT_LOCALE, locales } from "./locales";
 import type { Locale, Messages, PluralKey, TranslationKey } from "./types";
@@ -19,7 +20,7 @@ export type AssetReader = (path: string) => Promise<Response>;
 
 /** Fetches the catalog for a locale; English is already bundled, others load on demand from `public/locales`. */
 export async function loadMessages(locale: Locale, read: AssetReader = (path) => fetch(path)): Promise<Partial<Messages>> {
-	if (locale === DEFAULT_LOCALE) return en;
+	if (locale === "en") return en;
 	const response = await read(`/locales/${locale}.json`);
 	if (!response.ok) throw new Error(`Catalog for ${locale} is unavailable (${response.status})`);
 	return response.json();
@@ -34,7 +35,9 @@ function interpolate(template: string, vars?: TranslationVars): string {
 }
 
 export function translate(messages: Partial<Messages>, key: TranslationKey, vars?: TranslationVars): string {
-	return interpolate(messages[key] ?? en[key] ?? key, vars);
+	const text = messages[key] ?? en[key] ?? key;
+	const upstream = /^(licenses\.|update\.|emailClients\.qr|settingsPage\.security\.devicesDescription)/.test(key);
+	return interpolate(upstream ? text : text.replace(/Mailflare/g, brand.appName), vars);
 }
 
 // Server-safe translator. A numeric `count` var selects a plural variant: with

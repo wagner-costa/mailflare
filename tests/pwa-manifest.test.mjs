@@ -1,3 +1,4 @@
+import { brand } from "../src/lib/branding/config.ts";
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -43,9 +44,8 @@ test("manifest keeps the existing any-purpose icons", async () => {
 test("manifest theme_color matches the light viewport theme colour", async () => {
 	const manifest = await loadManifest();
 	const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
-	const light = layout.match(/prefers-color-scheme: light\)", color: "(#[0-9a-f]{6})"/i)?.[1];
-	assert.ok(light);
-	assert.equal(manifest.theme_color, light);
+	assert.match(layout, /prefers-color-scheme: light\)", color: brand.colors.background/);
+	assert.equal(manifest.theme_color, brand.colors.background);
 });
 
 // Android masks the icon to a circle of 40% of the width; the artwork must sit inside the 80% safe zone (radius 205 of 512).
@@ -56,7 +56,7 @@ test("maskable icon artwork fits inside the safe-zone circle", async () => {
 	for (let y = 0; y < info.height; y++) {
 		for (let x = 0; x < info.width; x++) {
 			const i = (y * info.width + x) * 4;
-			if (data[i + 3] > 16 && !(data[i] > 250 && data[i + 1] > 250 && data[i + 2] > 250)) {
+			if (data[i + 3] > 16 && (Math.abs(data[i] - data[0]) > 8 || Math.abs(data[i + 1] - data[1]) > 8 || Math.abs(data[i + 2] - data[2]) > 8)) {
 				x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
 			}
 		}

@@ -105,7 +105,7 @@ export default function PublicBookingEventPage() {
 		} finally { setSubmitting(false); }
 	}
 
-	return <main className="page-transition-enter min-h-dvh bg-[#f6f8fc] p-4 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] pl-[max(1rem,env(safe-area-inset-left))] text-neutral-900 max-sm:pr-[env(safe-area-inset-right)] max-sm:pb-[env(safe-area-inset-bottom)] max-sm:pl-[env(safe-area-inset-left)] sm:px-[max(1.5rem,env(safe-area-inset-left))] sm:pb-[max(1rem,env(safe-area-inset-bottom))] lg:h-dvh lg:overflow-hidden lg:pb-[env(safe-area-inset-bottom)]">
+	return <main className="page-transition-enter min-h-dvh bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] pl-[max(1rem,env(safe-area-inset-left))] text-neutral-900 max-sm:pr-[env(safe-area-inset-right)] max-sm:pb-[env(safe-area-inset-bottom)] max-sm:pl-[env(safe-area-inset-left)] sm:px-[max(1.5rem,env(safe-area-inset-left))] sm:pb-[max(1rem,env(safe-area-inset-bottom))] lg:h-dvh lg:overflow-hidden lg:pb-[env(safe-area-inset-bottom)]">
 		<div className="mx-auto max-w-[1500px] lg:flex lg:h-full lg:min-h-0 lg:flex-col">
 			{loading && <RouteLoadingBar />}
 			{selectedSlot && !done ? <button type="button" onClick={() => { setSelectedSlot(null); setError(""); writeBookingPageSelection(selectedDate, null, timeZone, true); }} className="mb-5 inline-flex items-center gap-2 self-start text-sm text-neutral-600 hover:text-blue-700 max-sm:ml-4"><ArrowLeft className="h-4 w-4" />{t("public.backToCalendar")}</button> : <Link href={username ? `/c/${username}` : `/book/${userId}`} className="mb-5 inline-flex items-center gap-2 self-start text-sm text-neutral-600 hover:text-blue-700 max-sm:ml-4"><ArrowLeft className="h-4 w-4" />{t("public.allMeetings")}</Link>}
@@ -129,7 +129,7 @@ export default function PublicBookingEventPage() {
 						<div className="mb-4 max-w-48"><LanguageSelector /></div>
 						<div className="flex min-w-0 items-center gap-3 max-sm:order-first max-sm:mb-5">
 
-							<img src={branding.iconUrl} width={24} height={24} alt={branding.appName || "Mailflare"} />
+							<img src={branding.iconUrl} width={24} height={24} alt={branding.appName} />
 
 							<span className="truncate font-semibold">{branding.appName}</span>
 						</div>
@@ -160,7 +160,7 @@ export default function PublicBookingEventPage() {
 								</div>
 								{slots.length === 0 && <p className="mt-6 text-sm text-neutral-500">{t("public.noTimes60")}</p>}
 							</section>
-							{selectedDate && <section key={selectedDate} className="page-transition-enter flex min-h-0 flex-col p-7 max-sm:p-5 sm:p-9 lg:overflow-hidden"><h3 className="mb-6 shrink-0 text-lg font-semibold">{formatCalendarDate(selectedDate, { weekday: "long", month: "short", day: "numeric" })}</h3><div className="min-h-0 max-h-[50dvh] flex-1 space-y-3 overflow-y-auto pr-1 lg:max-h-none">{(slotsByDate.get(selectedDate) ?? []).length === 0 ? <p className="text-sm text-neutral-500">{t("public.noTimesDate")}</p> : (slotsByDate.get(selectedDate) ?? []).map((slot) => <button type="button" key={slot.startsAt} onClick={() => { setSelectedSlot(slot); setError(""); writeBookingPageSelection(selectedDate, slot.startsAt, timeZone); }} className="w-full rounded-md border border-neutral-300 bg-white px-4 py-3 text-center text-sm font-medium text-blue-700 hover:border-blue-500 hover:bg-blue-50">{formatUserDate(slot.startsAt, { hour: "numeric", minute: "2-digit", hour12: true, timeZone })}</button>)}</div></section>}
+							{selectedDate && <section key={selectedDate} className="page-transition-enter flex min-h-0 flex-col p-7 max-sm:p-5 sm:p-9 lg:overflow-hidden"><h3 className="mb-6 shrink-0 text-lg font-semibold">{formatCalendarDate(selectedDate, { weekday: "long", month: "short", day: "numeric" })}</h3><div className="min-h-0 max-h-[50dvh] flex-1 space-y-3 overflow-y-auto pr-1 lg:max-h-none">{(slotsByDate.get(selectedDate) ?? []).length === 0 ? <p className="text-sm text-neutral-500">{t("public.noTimesDate")}</p> : (slotsByDate.get(selectedDate) ?? []).map((slot) => <button type="button" key={slot.startsAt} onClick={() => { setSelectedSlot(slot); setError(""); writeBookingPageSelection(selectedDate, slot.startsAt, timeZone); }} className="w-full rounded-md border border-neutral-300 bg-white px-4 py-3 text-center text-sm font-medium text-blue-700 hover:border-blue-500 hover:bg-blue-50">{formatUserDate(slot.startsAt, { hour: "numeric", minute: "2-digit", hour12: false, timeZone })}</button>)}</div></section>}
 						</>}
 				</div>}
 		</div>

@@ -1,8 +1,9 @@
+import { brand } from "@/lib/branding/config";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { LanguageProvider } from "@/components/language-provider";
-import { DEFAULT_LOCALE, getDirection } from "@/lib/i18n/utils";
+import { getDirection } from "@/lib/i18n/utils";
 import { getRequestLocale, loadServerMessages } from "@/lib/i18n/server";
 import { sidebarBootstrapScript } from "@/components/sidebar-state-utils";
 import { themeBootstrapScript } from "@/components/theme-utils";
@@ -23,8 +24,8 @@ const geistMono = Geist_Mono({
 // viewportFit "cover" lets the shell reach the notch and home indicator; the env(safe-area-inset-*) padding keeps content clear of them.
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "#f6f8fc" },
-		{ media: "(prefers-color-scheme: dark)", color: "#202124" },
+		{ media: "(prefers-color-scheme: light)", color: brand.colors.background },
+		{ media: "(prefers-color-scheme: dark)", color: brand.colors.graphite },
 	],
 	viewportFit: "cover",
 };
@@ -33,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	const { appName } = await getHomeBranding();
 	return {
 		title: appName,
-		description: "Multi-tenant email on Cloudflare",
+		description: brand.description,
 		icons: { icon: "/api/branding/icon", apple: "/apple-touch-icon.png" },
 		appleWebApp: {
 			capable: true,
@@ -59,7 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	const locale = await getRequestLocale();
-	const messages = locale === DEFAULT_LOCALE ? undefined : await loadServerMessages(locale);
+	const messages = locale === "en" ? undefined : await loadServerMessages(locale);
 	const branding = await getHomeBranding();
 	return (
 		<html lang={locale} dir={getDirection(locale)} data-remote-image-proxy="enabled" suppressHydrationWarning>

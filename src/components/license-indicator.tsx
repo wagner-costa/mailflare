@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { brand } from "@/lib/branding/config";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ export function LicenseIndicator() {
 	const [license, setLicense] = useState<LicenseStatus | null>(null);
 
 	useEffect(() => {
+		if (!brand.showUpgradePrompts) return;
 		let cancelled = false;
 
 		function load() {
@@ -29,7 +31,7 @@ export function LicenseIndicator() {
 		};
 	}, []);
 
-	if (!license || license.active) return null;
+	if (!brand.showUpgradePrompts || !license || license.active) return null;
 
 	return (
 		<Link

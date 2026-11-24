@@ -1,3 +1,4 @@
+import { brand } from "@/lib/branding/config";
 import { and, asc, eq, ne } from "drizzle-orm";
 import { getDb } from "@/db";
 import { domains, mailboxes, users } from "@/db/schema";
@@ -62,7 +63,7 @@ export async function pickSystemSender(
 	// Resend is verified per domain in Resend itself.
 	const usable = rows.filter((row) => row.provider !== "cloudflare" || row.cloudflareSending);
 	const chosen = usable.find((row) => row.role === "admin") ?? usable[0];
-	if (chosen) return { address: `${chosen.localPart}@${chosen.hostname}`, name: chosen.displayName ?? "Mailflare" };
+	if (chosen) return { address: `${chosen.localPart}@${chosen.hostname}`, name: chosen.displayName ?? brand.appName };
 
 	// No enabled mailbox on a sending domain: system mail does not need one, so
 	// send from no-reply@ on any domain whose provider can send.
@@ -75,5 +76,5 @@ export async function pickSystemSender(
 		))
 		.limit(50);
 	const domain = sendingDomains.find((row) => row.provider !== "cloudflare" || row.cloudflareSending);
-	return domain ? { address: `no-reply@${domain.hostname}`, name: "Mailflare" } : null;
+	return domain ? { address: `no-reply@${domain.hostname}`, name: brand.appName } : null;
 }

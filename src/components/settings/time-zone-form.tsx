@@ -1,5 +1,7 @@
 "use client";
 
+import { brand } from "@/lib/branding/config";
+
 import { useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
@@ -16,7 +18,7 @@ export function TimeZoneForm({ userId, initialTimeZone }: TimeZoneFormProps) {
 	const [saving, setSaving] = useState(false);
 	const [status, setStatus] = useState<string | null>(null);
 	const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-	const currentZone = timeZone.trim() || deviceTimeZone;
+	const currentZone = timeZone.trim() || brand.defaultTimeZone;
 	const validZone = (() => {
 		try { return formatCurrentTimeInZone(currentZone); }
 		catch { return null; }

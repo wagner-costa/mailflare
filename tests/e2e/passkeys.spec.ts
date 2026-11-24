@@ -1,4 +1,9 @@
 import { createHmac } from "node:crypto";
+
+// These scenarios exercise English explicitly; the installation defaults to pt-BR.
+test.beforeEach(async ({ context, baseURL }) => {
+	await context.addCookies([{ name: "mailflare-locale", value: "en", url: baseURL ?? "http://localhost:3000" }]);
+});
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
 const EMAIL = "admin@example.com";
@@ -80,6 +85,8 @@ async function loginWithPassword(page: Page) {
 
 async function logout(page: Page) {
 	await page.context().clearCookies();
+	// Clearing the session also clears language preferences; keep this English scenario explicit.
+	await page.context().addCookies([{ name: "mailflare-locale", value: "en", url: new URL(page.url()).origin }]);
 	await page.evaluate(() => localStorage.clear());
 	await page.goto("/login");
 }

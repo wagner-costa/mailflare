@@ -119,7 +119,7 @@ export function LoadingTransition({ children, ready }: LoadingTransitionProps) {
 
 	return (
 		<PageLoadingContext.Provider value={loadingContext}>
-			<div className="relative min-h-dvh bg-[#f6f8fc]">
+			<div className="relative min-h-dvh bg-background">
 				<style dangerouslySetInnerHTML={{ __html: SPLASH_GUARD_STYLE }} />
 				<script dangerouslySetInnerHTML={{ __html: SPLASH_GUARD_SCRIPT }} suppressHydrationWarning />
 				{showTopLoadingBar && <RouteLoadingBar />}
@@ -133,7 +133,7 @@ export function LoadingTransition({ children, ready }: LoadingTransitionProps) {
 				)}
 				<div
 					role="status"
-					className={`splash-overlay fixed inset-0 z-[100] flex items-center justify-center bg-[#f6f8fc] transition-opacity duration-300 ${
+					className={`splash-overlay fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-300 ${
 						loaderVisible ? "opacity-100" : "pointer-events-none opacity-0"
 					}`}
 				>
