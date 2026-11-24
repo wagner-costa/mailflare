@@ -1,3 +1,4 @@
+import { brand } from "@/lib/branding/config";
 import type { ZonedDay } from "./types";
 
 const fieldFormatters = new Map<string, Intl.DateTimeFormat>();
@@ -22,7 +23,7 @@ function getDisplayFormatter(locale: string | undefined, options: Intl.DateTimeF
 	const key = `${locale ?? "default"}\u0000${timeZone}\u0000${JSON.stringify(options)}`;
 	let formatter = displayFormatters.get(key);
 	if (!formatter) {
-		formatter = new Intl.DateTimeFormat(locale, { ...options, timeZone });
+		formatter = new Intl.DateTimeFormat(locale ?? brand.defaultLocale, { hourCycle: "h23", ...options, timeZone });
 		if (displayFormatters.size >= 64) displayFormatters.clear();
 		displayFormatters.set(key, formatter);
 	}
@@ -54,9 +55,9 @@ export function isValidTimeZone(value: string): boolean {
 }
 
 export function getUserTimeZone(): string {
-	if (typeof window === "undefined") return "UTC";
+	if (typeof window === "undefined") return brand.defaultTimeZone;
 	if (resolvedUserTimeZone) return resolvedUserTimeZone;
-	let zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+	let zone: string = brand.defaultTimeZone;
 	try {
 		const saved = JSON.parse(window.localStorage.getItem("mailflare-user-time-zone") ?? "null") as { timeZone?: unknown } | null;
 		if (typeof saved?.timeZone === "string" && isValidTimeZone(saved.timeZone)) zone = normalizeTimeZone(saved.timeZone);
@@ -75,8 +76,8 @@ export function getRequestTimeZone(request: Request, preferredTimeZone?: string 
 
 /** The interface language the language provider keeps on `<html lang>`; the browser default when unset or on the server. */
 export function getDisplayLocale(): string | undefined {
-	if (typeof document === "undefined") return undefined;
-	return document.documentElement.lang || undefined;
+	if (typeof document === "undefined") return brand.defaultLocale;
+	return document.documentElement.lang || brand.defaultLocale;
 }
 
 export function formatUserDate(value: Date | string, options: Intl.DateTimeFormatOptions): string {

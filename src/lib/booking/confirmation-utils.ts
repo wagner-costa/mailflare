@@ -1,4 +1,5 @@
 import { createCalendarInvitation } from "@/lib/calendar/utils";
+import { brand } from "@/lib/branding/config";
 
 export type BookingConfirmationContent = {
 	eventName: string;
@@ -38,7 +39,7 @@ export const DEFAULT_CONFIRMATION_BODY = [
 
 const FALLBACK_LOCALE = "en-GB";
 
-/** The locale for {when}: the language the guest picked on the booking page, else their browser's, else English. */
+/** The locale for {when}: the guest's page selection, browser language, then the installation default. */
 export function pickGuestLocale(localeCookie: string | null | undefined, acceptLanguage: string | null | undefined): string {
 	const candidates = [localeCookie, ...(acceptLanguage ?? "").split(",").map((part) => part.split(";")[0])];
 	for (const candidate of candidates) {
@@ -50,7 +51,7 @@ export function pickGuestLocale(localeCookie: string | null | undefined, acceptL
 			// Not a valid language tag; try the next one.
 		}
 	}
-	return FALLBACK_LOCALE;
+	return brand.defaultLocale;
 }
 
 /** "Friday 13 November 2026, 10:00–10:30 (Europe/Berlin)" in the event's time zone, worded for the guest's locale. */
@@ -62,7 +63,7 @@ export function formatBookingWhen(startsAt: Date, endsAt: Date, timeZone: string
 		zone = "UTC";
 	}
 	const day = new Intl.DateTimeFormat(locale, { timeZone: zone, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(startsAt);
-	const time = new Intl.DateTimeFormat(locale, { timeZone: zone, hour: "2-digit", minute: "2-digit" });
+	const time = new Intl.DateTimeFormat(locale, { timeZone: zone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 	return `${day}, ${time.format(startsAt)}–${time.format(endsAt)} (${zone})`;
 }
 
@@ -101,6 +102,13 @@ export function parseConfirmationTemplateInput(value: unknown): BookingConfirmat
 
 /** The guest confirmation: the event's own subject and body where set, the default template otherwise. */
 export function buildBookingConfirmation(content: BookingConfirmationContent, locale = FALLBACK_LOCALE, template?: BookingConfirmationTemplate | null): { subject: string; text: string } {
+	const portuguese = locale.toLowerCase().startsWith("pt");
+	const defaultSubject = portuguese ? "Confirmado: {eventName} com {hostName}" : DEFAULT_CONFIRMATION_SUBJECT;
+	const defaultBody = portuguese ? [
+		"Olá, {guestName},", "", "seu agendamento está confirmado: {eventName} com {hostName}.", "",
+		"Quando: {when}", "Local: {location}", "",
+		"O arquivo de calendário em anexo adiciona o compromisso à sua agenda. Responda a este e-mail se precisar alterar ou cancelar.",
+	].join("\n") : DEFAULT_CONFIRMATION_BODY;
 	// The booker is anonymous: keep their name on one line so it cannot add lines to the message or subject.
 	const values = {
 		guestName: content.guestName.replace(/\s+/g, " ").trim(),
@@ -112,8 +120,8 @@ export function buildBookingConfirmation(content: BookingConfirmationContent, lo
 	};
 	// A guest's name can go into the subject, so keep it on one header line whatever they typed.
 	const oneLine = (value: string) => value.replace(/[\r\n]+/g, " ").trim();
-	const subject = oneLine(renderBookingTemplate(template?.subject || DEFAULT_CONFIRMATION_SUBJECT, values)) || oneLine(renderBookingTemplate(DEFAULT_CONFIRMATION_SUBJECT, values));
-	return { subject, text: renderBookingTemplate(template?.body || DEFAULT_CONFIRMATION_BODY, values) };
+	const subject = oneLine(renderBookingTemplate(template?.subject || defaultSubject, values)) || oneLine(renderBookingTemplate(defaultSubject, values));
+	return { subject, text: renderBookingTemplate(template?.body || defaultBody, values) };
 }
 
 /**

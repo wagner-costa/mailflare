@@ -1,0 +1,35 @@
+# Local WSL installation. Preserve the upstream production Compose configuration.
+# Start: docker compose -p ownforge-local -f docker-compose.local.yml up -d --build
+services:
+  mailflare:
+    build: .
+    image: ownforge:local
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file: .env.docker
+    environment:
+      APP_URL: http://127.0.0.1:3000
+      SMTP_INBOUND_PORT: "0"
+      SMTP_URL: smtp://mailpit:1025
+      TZ: America/Sao_Paulo
+    depends_on:
+      - mailpit
+    volumes:
+      - mailflare-data:/data
+
+  mailpit:
+    image: axllent/mailpit:v1.32.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      TZ: America/Sao_Paulo
+    volumes:
+      - mailpit-data:/data
+
+volumes:
+  mailflare-data:
+  mailpit-data:

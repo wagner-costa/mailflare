@@ -10,10 +10,8 @@ permissions:
 
 jobs:
   checks:
-    # Update Mailflare copies .github/workflows into every installation
-    # repository; this keeps the checks from running (and using Actions
-    # minutes) there.
-    if: github.repository == 'hieunc229/mailflare'
+    # Runs only in the OwnForge fork, never in forks of it.
+    if: github.repository == 'wagner-costa/mailflare'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

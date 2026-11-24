@@ -66,3 +66,6 @@ mailflare-landing
 skills-lock.json
 /dist/
 /tests/.tmp-*
+
+# Generated corresponding-source archive (rebuilt with every build).
+/public/source/

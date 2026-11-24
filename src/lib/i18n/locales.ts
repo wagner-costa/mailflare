@@ -1,3 +1,4 @@
+import { brand } from "@/lib/branding/config";
 type LocaleEntry = {
 	/** The language's own name, shown in the selector. */
 	label: string;
@@ -47,5 +48,5 @@ export const locales = {
 } satisfies Record<string, LocaleEntry>;
 
 export type Locale = keyof typeof locales;
-export const DEFAULT_LOCALE = "en" satisfies Locale;
+export const DEFAULT_LOCALE = brand.defaultLocale satisfies Locale;
 export const supportedLocales = Object.keys(locales) as Locale[];

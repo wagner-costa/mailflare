@@ -1,3 +1,4 @@
+import { brand } from "@/lib/branding/config";
 import type { Translator } from "@/lib/i18n/utils";
 
 export function escapeHtml(value: string): string {
@@ -19,7 +20,7 @@ export function buildPasswordResetEmail(
 			"",
 			ignore,
 		].join("\n"),
-		html: `<p>${t("auth.resetMail.intro", { email: `<b>${escapeHtml(email)}</b>`, appName: escapeHtml(appName) })}</p><p>${escapeHtml(t("auth.resetMail.instructions", { minutes }))}</p><p><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p><p>${escapeHtml(ignore)}</p>`,
+		html: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:auto;padding:32px;color:${brand.colors.graphite};background:#FFFFFF;border:1px solid ${brand.colors.border};border-radius:16px"><h1 style="font-size:24px;color:${brand.colors.blue}">${escapeHtml(appName)}</h1><p>${t("auth.resetMail.intro", { email: `<b>${escapeHtml(email)}</b>`, appName: escapeHtml(appName) })}</p><p>${escapeHtml(t("auth.resetMail.instructions", { minutes }))}</p><p><a href="${escapeHtml(link)}">${escapeHtml(link)}</a></p><p>${escapeHtml(ignore)}</p></div>`,
 	};
 }
 
